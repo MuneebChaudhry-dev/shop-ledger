@@ -6,7 +6,8 @@ Stack: Vite + React 19 + TypeScript, Tailwind v4, Dexie (IndexedDB), Supabase (A
 
 ## Commands
 - `npm run dev` / `npm run build` / `npm run lint`
-- DB schema changes: add a new file in `supabase/migrations/`, never edit an applied one.
+- DB schema changes: `npx supabase migration new <name>`, never edit an applied migration. Deploys run on merge to `main` (Supabase GitHub integration).
+- After a schema change run `npm run db:types` and use the types from `src/lib/database.types.ts`.
 
 ## Rules
 - IMPORTANT: Every write goes to Dexie first, then the outbox in `src/lib/sync.ts` uploads it. Never call Supabase directly from a component.
