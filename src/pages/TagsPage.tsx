@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button, Card, Input, PageHeader, Spinner } from '../components/ui'
 import { db, newId, patchRecord, saveRecord, softDelete, type Tag, type TagGroup } from '../lib/db'
 import { queueSync } from '../lib/sync'
+import { askConfirm } from '../lib/confirm'
 
 const GroupCard = ({ group, tags }: { group: TagGroup; tags: Tag[] }) => {
   const [name, setName] = useState('')
@@ -20,7 +21,12 @@ const GroupCard = ({ group, tags }: { group: TagGroup; tags: Tag[] }) => {
         {tags.map((t) => (
           <span key={t.id} dir="auto" className="flex h-9 items-center gap-1 rounded-full bg-slate-100 pl-3 pr-1 text-sm">
             {t.name}
-            <button type="button" aria-label={`Remove ${t.name}`} className="rounded-full p-1 active:bg-slate-200" onClick={() => { if (confirm(`Remove tag "${t.name}"? Old items keep it in history.`)) { void softDelete('tags', t.id); queueSync() } }}>
+            <button type="button" aria-label={`Remove ${t.name}`} className="rounded-full p-1 active:bg-slate-200" onClick={async () => {
+              if (await askConfirm({ title: `Remove tag "${t.name}"?`, tone: 'danger', confirmLabel: 'Yes, remove', body: 'Old items keep it in their history. New items cannot use it.' })) {
+                await softDelete('tags', t.id)
+                queueSync()
+              }
+            }}>
               <X className="size-4" />
             </button>
           </span>

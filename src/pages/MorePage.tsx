@@ -11,7 +11,7 @@ const links: { to: string; label: string; hint: string; icon: ComponentType<{ cl
   { to: '/expenses', label: 'Expenses', hint: 'Chai and month-end costs', icon: Receipt, action: 'finance.view' },
   { to: '/settings/tags', label: 'Tags', hint: 'Categories for stock', icon: Tags, action: 'admin.manage' },
   { to: '/settings/users', label: 'Users', hint: 'Managers and workers', icon: Users, action: 'admin.manage' },
-  { to: '/settings', label: 'Settings', hint: 'Prices, chai, backup, sign out', icon: Settings, action: 'stock.manage' },
+  { to: '/settings', label: 'Settings', hint: 'Sync, prices, chai, backup', icon: Settings, action: 'stock.manage' },
 ]
 
 export const MorePage = () => {

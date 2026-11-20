@@ -1,10 +1,10 @@
-import { Download, LogOut, RefreshCw, Save, Tags, Users } from 'lucide-react'
+import { Download, RefreshCw, Save, Tags, Users } from 'lucide-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { MoneyInput } from '../components/MoneyInput'
 import { Button, Card, Field, Input, PageHeader, Row } from '../components/ui'
-import { signOut, useAuth } from '../lib/auth'
+import { useAuth } from '../lib/auth'
 import { exportBackup } from '../lib/backup'
 import { formatRs, suggestPrices } from '../lib/money'
 import { can } from '../lib/roles'
@@ -12,6 +12,8 @@ import { saveSetting, useChaiDefault, useMargins } from '../lib/settings'
 import { db } from '../lib/db'
 import { MAX_TRIES, retryStuck, syncNow, useSyncStore } from '../lib/sync'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 const pct = (v: number) => Math.round(v * 100)
 
@@ -45,6 +47,17 @@ const Margins = () => {
         className="w-full"
         disabled={!valid}
         onClick={async () => {
+          const ok = await askConfirm({
+            title: 'Change price margins?',
+            confirmLabel: 'Yes, save',
+            body: (
+              <div className="space-y-2">
+                <Summary rows={[['Min', `cost +${min}%`], ['Ask', `cost +${suggested}%`], ['Max', `cost +${max}%`]]} />
+                <p>Only new stock uses these. Prices on existing stock stay the same.</p>
+              </div>
+            ),
+          })
+          if (!ok) return
           await saveSetting('margins', { min: min / 100, suggested: suggested / 100, max: max / 100 })
           setSaved(true)
           setTimeout(() => setSaved(false), 2000)
@@ -73,7 +86,6 @@ export const SettingsPage = () => {
   const navigate = useNavigate()
   const profile = useAuth((s) => s.profile)
   const { pending, lastSyncedAt, lastError } = useSyncStore()
-  const [warn, setWarn] = useState(false)
   const isOwner = can(profile?.role, 'admin.manage')
   const stuck = useLiveQuery(() => db.outbox.where('tries').aboveOrEqual(MAX_TRIES).toArray(), [])
   return (
@@ -104,17 +116,6 @@ export const SettingsPage = () => {
       )}
       {can(profile?.role, 'stock.manage') && (
         <Button variant="secondary" className="w-full" onClick={() => void exportBackup()}><Download className="size-4" />Download backup (JSON)</Button>
-      )}
-      {warn ? (
-        <Card className="space-y-2 border-red-300 bg-red-50">
-          <p className="text-sm text-red-700">{pending} changes are not uploaded yet. Signing out now deletes them from this phone.</p>
-          <div className="flex gap-2">
-            <Button variant="secondary" className="flex-1" onClick={() => setWarn(false)}>Keep</Button>
-            <Button variant="danger" className="flex-1" onClick={() => void signOut(true)}>Sign out anyway</Button>
-          </div>
-        </Card>
-      ) : (
-        <Button variant="ghost" className="w-full text-red-600" onClick={async () => { if (!(await signOut())) setWarn(true) }}><LogOut className="size-4" />Sign out</Button>
       )}
     </div>
   )

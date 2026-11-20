@@ -11,6 +11,8 @@ import { lotRecovery } from '../lib/calc/stock'
 import { db, patchRecord, softDelete, type Lot, type Piece } from '../lib/db'
 import { formatRs, type PriceSet } from '../lib/money'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 const statusTone = { in_stock: 'green', sold: 'slate', returned: 'yellow', written_off: 'red' } as const
 const statusText = { in_stock: 'In stock', sold: 'Sold', returned: 'Returned', written_off: 'Written off' } as const
@@ -97,6 +99,27 @@ const ReturnForm = ({ lot, pieces, onDone }: { lot: Lot; pieces: Piece[]; onDone
           className="flex-1"
           disabled={count === 0}
           onClick={async () => {
+            const writeOff = type === 'write_off'
+            const ok = await askConfirm({
+              title: writeOff ? `Write off ${count} piece${count === 1 ? '' : 's'}?` : `Return ${count} piece${count === 1 ? '' : 's'} to the vendor?`,
+              tone: writeOff ? 'danger' : 'primary',
+              confirmLabel: writeOff ? 'Yes, write off' : 'Yes, return',
+              body: (
+                <div className="space-y-2">
+                  <Summary
+                    rows={[
+                      ['Item', lot.title],
+                      ['Pieces', count],
+                      ['Cost of these pieces', formatRs(cost)],
+                      [lot.paymentType === 'credit' ? 'Taken off what you owe' : 'Cash refund', writeOff ? undefined : formatRs(value ?? cost)],
+                      ['Loss in this month', writeOff ? formatRs(cost) : formatRs(Math.max(0, cost - (value ?? cost)))],
+                    ]}
+                  />
+                  <p className="font-medium text-amber-700">Stock goes down now. This cannot be undone.</p>
+                </div>
+              ),
+            })
+            if (!ok) return
             try {
               await recordVendorReturn(lot, {
                 type, qty, pieces: lot.mode === 'single' ? selected : undefined, value: value ?? cost, photoId, note: note.trim() || undefined,
@@ -208,7 +231,13 @@ export const LotPage = () => {
           variant="ghost"
           className="w-full text-red-600"
           onClick={async () => {
-            if (!confirm('Delete this lot? It has no sales yet.')) return
+            const ok = await askConfirm({
+              title: 'Delete this lot?',
+              tone: 'danger',
+              confirmLabel: 'Yes, delete',
+              body: <Summary rows={[['Item', lot.title], ['Quantity', lot.qtyBought], ['Total cost', formatRs(lot.totalCost)]]} />,
+            })
+            if (!ok) return
             await softDelete('lots', lot.id)
             for (const p of pieces) await softDelete('pieces', p.id)
             navigate('/stock', { replace: true })

@@ -7,6 +7,8 @@ import { db, patchRecord, type Profile } from '../lib/db'
 import { createStaff } from '../lib/staff'
 import { queueSync } from '../lib/sync'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 export const UsersPage = () => {
   const me = useAuth((s) => s.profile)
@@ -28,7 +30,16 @@ export const UsersPage = () => {
             <Button
               size="sm"
               variant="secondary"
-              onClick={() => { void patchRecord<Profile>('profiles', u.id, { active: !u.active }); queueSync() }}
+              onClick={async () => {
+                const ok = await askConfirm(
+                  u.active
+                    ? { title: `Disable ${u.name}?`, tone: 'danger', confirmLabel: 'Yes, disable', body: 'They lose access, and their phone is cleared the next time they open the app online. You can enable them again later.' }
+                    : { title: `Enable ${u.name}?`, confirmLabel: 'Yes, enable', body: `They can sign in again as ${u.role}.` },
+                )
+                if (!ok) return
+                await patchRecord<Profile>('profiles', u.id, { active: !u.active })
+                queueSync()
+              }}
             >
               {u.active ? <UserX className="size-4" /> : <UserCheck className="size-4" />}
               {u.active ? 'Disable' : 'Enable'}
@@ -49,6 +60,20 @@ export const UsersPage = () => {
           className="w-full"
           disabled={busy || !form.name.trim() || !form.username || form.password.length < 6}
           onClick={async () => {
+            const ok = await askConfirm({
+              title: `Add ${form.name.trim()} as ${form.role}?`,
+              confirmLabel: `Yes, add ${form.role}`,
+              tone: form.role === 'manager' ? 'danger' : 'primary',
+              body: (
+                <div className="space-y-2">
+                  <Summary rows={[['Name', form.name.trim()], ['Username', form.username], ['Role', form.role], ['Phone', form.phone.trim() || undefined]]} />
+                  <p className="font-medium text-amber-700">
+                    {form.role === 'manager' ? 'A manager can see costs, profit, dues and all stock.' : 'A worker sees only items and prices, and can record sales.'}
+                  </p>
+                </div>
+              ),
+            })
+            if (!ok) return
             setBusy(true)
             setError(undefined)
             try {

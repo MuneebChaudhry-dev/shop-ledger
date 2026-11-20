@@ -9,6 +9,8 @@ import { db } from '../lib/db'
 import { formatRs } from '../lib/money'
 import { useOwed } from '../lib/useDues'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 export const PartyPage = () => {
   const { id = '' } = useParams()
@@ -54,6 +56,12 @@ export const PartyPage = () => {
           className="w-full"
           disabled={!amount}
           onClick={async () => {
+            const ok = await askConfirm({
+              title: `Pay ${formatRs(amount ?? 0)} to ${party.name}?`,
+              confirmLabel: 'Yes, save payment',
+              body: <Summary rows={[['Amount', formatRs(amount ?? 0)], ['Method', method], ['Owed before', formatRs(Math.max(0, due))], ['Owed after', formatRs(Math.max(0, due - (amount ?? 0)))], ['Note', note.trim() || undefined]]} />,
+            })
+            if (!ok) return
             try {
               await recordPayment({ partyId: id, amount: amount ?? 0, method, note: note.trim() || undefined })
               setAmount(null)

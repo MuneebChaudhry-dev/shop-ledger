@@ -1,5 +1,5 @@
 import { ChevronLeft, Eye, EyeOff, type LucideIcon } from 'lucide-react'
-import { useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import { useState, type ComponentProps, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { useNavigate } from 'react-router'
 import { cn } from '../lib/cn'
 
@@ -10,7 +10,7 @@ export const Button = ({
   size = 'md',
   className,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; size?: 'md' | 'lg' | 'sm' }) => (
+}: ComponentProps<'button'> & { variant?: Variant; size?: 'md' | 'lg' | 'sm' }) => (
   <button
     {...props}
     className={cn(

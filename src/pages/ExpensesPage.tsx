@@ -8,6 +8,8 @@ import { getPeriod, monthKey, shiftPeriod } from '../lib/calc/periods'
 import { db, softDelete } from '../lib/db'
 import { formatRs } from '../lib/money'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 const presets = ['Rent', 'Electricity', 'Salaries', 'Internet', 'Transport', 'Other']
 
@@ -51,6 +53,12 @@ export const ExpensesPage = () => {
           className="w-full"
           disabled={!name.trim() || !amount}
           onClick={async () => {
+            const ok = await askConfirm({
+              title: `Add ${formatRs(amount ?? 0)} for ${name.trim()}?`,
+              confirmLabel: 'Yes, add expense',
+              body: <Summary rows={[['Expense', name.trim()], ['Amount', formatRs(amount ?? 0)], ['Month', period.label]]} />,
+            })
+            if (!ok) return
             try {
               await addExpense({ type: 'month_end', name: name.trim(), amount: amount ?? 0, month })
               setName('')
@@ -71,7 +79,10 @@ export const ExpensesPage = () => {
             <span dir="auto">{e.name}</span>
             <span className="flex items-center gap-3">
               <b>{formatRs(e.amount)}</b>
-              <button type="button" aria-label={`Remove ${e.name}`} className="rounded-lg p-1.5 text-red-600 hover:bg-red-50" onClick={() => confirm(`Remove ${e.name}?`) && void softDelete('expenses', e.id)}><Trash2 className="size-4" /></button>
+              <button type="button" aria-label={`Remove ${e.name}`} className="rounded-lg p-1.5 text-red-600 hover:bg-red-50" onClick={async () => {
+                  if (await askConfirm({ title: `Remove ${e.name}?`, tone: 'danger', confirmLabel: 'Yes, remove', body: <Summary rows={[['Amount', formatRs(e.amount)], ['Month', period.label]]} /> }))
+                    await softDelete('expenses', e.id)
+                }}><Trash2 className="size-4" /></button>
             </span>
           </div>
         ))}

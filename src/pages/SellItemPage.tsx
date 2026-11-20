@@ -10,6 +10,8 @@ import type { Sale } from '../lib/db'
 import { formatRs, priceFlag } from '../lib/money'
 import { useSellableItems } from '../lib/queries'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 const flagText = { red: 'Below minimum', yellow: 'OK, below asking price', green: 'Good price' } as const
 const flagClass = { red: 'border-red-500 bg-red-50', yellow: 'border-amber-500 bg-amber-50', green: 'border-green-600 bg-green-50' } as const
@@ -38,6 +40,23 @@ export const SellItemPage = () => {
       onSubmit={async (e) => {
         e.preventDefault()
         if (!price) return setError('Enter the sale price')
+        // Owner asked for colour only on normal prices. A price far outside the range is usually a typo
+        // (an extra or missing zero), so only then do we ask.
+        if (price > item.maxPrice * 2 || price * 2 < item.minPrice) {
+          const ok = await askConfirm({
+            title: 'Is this price right?',
+            tone: 'danger',
+            confirmLabel: 'Yes, save sale',
+            cancelLabel: 'Fix price',
+            body: (
+              <div className="space-y-2">
+                <p>This price is far from the usual range. Check for an extra or missing zero.</p>
+                <Summary rows={[['Price per piece', formatRs(price)], ['Usual range', `${formatRs(item.minPrice)} to ${formatRs(item.maxPrice)}`], ['Quantity', qty], ['Total', formatRs(price * qty)]]} />
+              </div>
+            ),
+          })
+          if (!ok) return
+        }
         setBusy(true)
         try {
           await recordSale({ item, qty, unitSalePrice: price, paymentMethod: method, photoId, soldBy: profile.id })

@@ -8,6 +8,8 @@ import { recordCustomerReturn, returnedQty } from '../lib/actions'
 import { db } from '../lib/db'
 import { formatRs } from '../lib/money'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 /** Customer brings an item back. Recorded as a new dated entry; the original sale is not changed. */
 export const ReturnPage = () => {
@@ -59,6 +61,19 @@ export const ReturnPage = () => {
             size="lg"
             className="w-full"
             onClick={async () => {
+              const refundGiven = refund ?? defaultRefund
+              const ok = await askConfirm({
+                title: `Give back ${formatRs(refundGiven)}?`,
+                tone: backToStock === 'defective' ? 'danger' : 'primary',
+                confirmLabel: 'Yes, save return',
+                body: (
+                  <div className="space-y-2">
+                    <Summary rows={[['Item', lot?.title], ['Pieces returned', qty], ['Refund', formatRs(refundGiven)], ['Condition', backToStock === 'stock' ? 'Back to stock' : 'Defective (not sellable)']]} />
+                    <p className="font-medium text-amber-700">Today's earning and profit go down by this return.</p>
+                  </div>
+                ),
+              })
+              if (!ok) return
               try {
                 await recordCustomerReturn(sale, { qty, refundAmount: refund ?? defaultRefund, backToStock, note: note.trim() || undefined })
                 navigate(-1)

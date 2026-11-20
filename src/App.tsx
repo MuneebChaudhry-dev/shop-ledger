@@ -1,6 +1,7 @@
 import { BarChart3, Boxes, Home, Menu, ShoppingBag, Tag } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { Navigate, NavLink, Route, Routes } from 'react-router'
+import { SignOutButton } from './components/SignOutButton.tsx'
 import { SyncBadge } from './components/SyncBadge.tsx'
 import { Spinner } from './components/ui.tsx'
 import { useAuth } from './lib/auth.ts'
@@ -24,6 +25,7 @@ import { SettingsPage } from './pages/SettingsPage.tsx'
 import { StockPage } from './pages/StockPage.tsx'
 import { TagsPage } from './pages/TagsPage.tsx'
 import { UsersPage } from './pages/UsersPage.tsx'
+import { ConfirmDialog } from './components/ConfirmDialog.tsx'
 
 // Stats pulls in the chart library, so it loads on first visit only.
 const StatsPage = lazy(() => import('./pages/StatsPage.tsx').then((m) => ({ default: m.StatsPage })))
@@ -57,9 +59,10 @@ export const App = () => {
 
   return (
     <div className="mx-auto flex h-full max-w-md flex-col bg-slate-50">
-      <div className="flex items-center justify-between px-4 pt-3">
-        <span className="text-sm text-slate-500" dir="auto">{profile.name} · {profile.role}</span>
+      <div className="relative flex items-center gap-2 px-4 pt-3">
+        <span className="min-w-0 flex-1 truncate text-sm text-slate-500" dir="auto">{profile.name} · {profile.role}</span>
         <SyncBadge />
+        <SignOutButton />
       </div>
       <main className="flex-1 overflow-y-auto px-4 pb-6 pt-2">
         <Routes>
@@ -83,6 +86,7 @@ export const App = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      <ConfirmDialog />
       <nav
         className="grid border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)]"
         style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}

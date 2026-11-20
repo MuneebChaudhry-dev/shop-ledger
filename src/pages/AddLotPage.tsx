@@ -11,6 +11,8 @@ import { db } from '../lib/db'
 import { allocatePieceCosts, formatRs, leftToAssign, suggestPrices, unitCost, type PriceSet } from '../lib/money'
 import { useMargins } from '../lib/settings'
 import { ErrorAlert } from '../components/Alert'
+import { Summary } from '../components/ConfirmDialog'
+import { askConfirm } from '../lib/confirm'
 
 interface PieceDraft extends PriceSet {
   title: string
@@ -95,6 +97,32 @@ export const AddLotPage = () => {
         if (mode === 'single' && qty > MAX_PIECES) return setError(`One by one supports up to ${MAX_PIECES} pieces`)
         if (paymentType === 'credit' && !partyId && !party.name.trim()) return setError('Add the creditor name')
         if (mode === 'single' && left !== 0) return setError(`Piece costs must add up to the total (${formatRs(left)} left)`)
+        const partyName = partyId ? partyOptions.find((p) => p.id === partyId)?.name : party.name.trim()
+        const ok = await askConfirm({
+          title: 'Save this stock?',
+          confirmLabel: 'Yes, save stock',
+          body: (
+            <div className="space-y-2">
+              <Summary
+                rows={[
+                  ['Item', title.trim()],
+                  ['Type', mode === 'whole' ? 'Whole lot' : 'One by one'],
+                  ['Quantity', `${qty} pieces`],
+                  ['Total cost', formatRs(totalCost)],
+                  ['Cost per piece', formatRs(cost)],
+                  ['Paid', paymentType === 'credit' ? 'On credit' : 'Cash'],
+                  [paymentType === 'credit' ? 'Creditor' : 'Seller', partyName || undefined],
+                  ['Pay by', paymentType === 'credit' && dueDate ? dueDate : undefined],
+                  ['Min price', mode === 'whole' ? formatRs(prices.minPrice) : undefined],
+                  ['Ask price', mode === 'whole' ? formatRs(prices.suggestedPrice) : undefined],
+                  ['Max price', mode === 'whole' ? formatRs(prices.maxPrice) : undefined],
+                ]}
+              />
+              <p className="font-medium text-amber-700">Quantity and total cost cannot be changed later.</p>
+            </div>
+          ),
+        })
+        if (!ok) return
         setBusy(true)
         try {
           const lot = await createLot({
