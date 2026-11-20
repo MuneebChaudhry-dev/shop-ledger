@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+@import '@fontsource/noto-nastaliq-urdu/400.css';
+
+@theme {
+  --font-sans: system-ui, 'Noto Nastaliq Urdu', sans-serif;
+  --font-urdu: 'Noto Nastaliq Urdu', serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* Urdu text needs extra line height for Nastaliq */
+:where([dir='rtl']) {
+  font-family: var(--font-urdu);
+  line-height: 2;
+}
