@@ -3,9 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import './index.css'
 import { App } from './App.tsx'
-import { startSync } from './lib/sync.ts'
+import { initAuth } from './lib/auth.ts'
 
-startSync()
+void initAuth()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

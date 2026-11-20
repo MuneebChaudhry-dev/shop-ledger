@@ -50,6 +50,7 @@ export type Database = {
           refund_amount: number
           returned_at: number
           sale_id: string
+          synced_at: number
           updated_at: number
         }
         Insert: {
@@ -62,6 +63,7 @@ export type Database = {
           refund_amount: number
           returned_at: number
           sale_id: string
+          synced_at?: number
           updated_at: number
         }
         Update: {
@@ -74,6 +76,7 @@ export type Database = {
           refund_amount?: number
           returned_at?: number
           sale_id?: string
+          synced_at?: number
           updated_at?: number
         }
         Relationships: [
@@ -96,6 +99,7 @@ export type Database = {
           month: string
           name: string
           note: string | null
+          synced_at: number
           type: string
           updated_at: number
         }
@@ -108,6 +112,7 @@ export type Database = {
           month: string
           name: string
           note?: string | null
+          synced_at?: number
           type: string
           updated_at: number
         }
@@ -120,6 +125,7 @@ export type Database = {
           month?: string
           name?: string
           note?: string | null
+          synced_at?: number
           type?: string
           updated_at?: number
         }
@@ -142,6 +148,7 @@ export type Database = {
           qty_bought: number
           qty_remaining: number
           suggested_price: number
+          synced_at: number
           tag_ids: string[]
           title: string
           total_cost: number
@@ -164,6 +171,7 @@ export type Database = {
           qty_bought: number
           qty_remaining: number
           suggested_price: number
+          synced_at?: number
           tag_ids?: string[]
           title: string
           total_cost: number
@@ -186,6 +194,7 @@ export type Database = {
           qty_bought?: number
           qty_remaining?: number
           suggested_price?: number
+          synced_at?: number
           tag_ids?: string[]
           title?: string
           total_cost?: number
@@ -211,6 +220,7 @@ export type Database = {
           kind: string
           name: string
           phone: string | null
+          synced_at: number
           updated_at: number
         }
         Insert: {
@@ -221,6 +231,7 @@ export type Database = {
           kind: string
           name: string
           phone?: string | null
+          synced_at?: number
           updated_at: number
         }
         Update: {
@@ -231,6 +242,7 @@ export type Database = {
           kind?: string
           name?: string
           phone?: string | null
+          synced_at?: number
           updated_at?: number
         }
         Relationships: []
@@ -246,6 +258,7 @@ export type Database = {
           note: string | null
           paid_at: number
           party_id: string
+          synced_at: number
           updated_at: number
         }
         Insert: {
@@ -258,6 +271,7 @@ export type Database = {
           note?: string | null
           paid_at: number
           party_id: string
+          synced_at?: number
           updated_at: number
         }
         Update: {
@@ -270,6 +284,7 @@ export type Database = {
           note?: string | null
           paid_at?: number
           party_id?: string
+          synced_at?: number
           updated_at?: number
         }
         Relationships: [
@@ -300,6 +315,7 @@ export type Database = {
           photo_id: string | null
           status: string
           suggested_price: number
+          synced_at: number
           tag_ids: string[]
           title: string
           unit_cost: number
@@ -315,6 +331,7 @@ export type Database = {
           photo_id?: string | null
           status?: string
           suggested_price: number
+          synced_at?: number
           tag_ids?: string[]
           title: string
           unit_cost: number
@@ -330,6 +347,7 @@ export type Database = {
           photo_id?: string | null
           status?: string
           suggested_price?: number
+          synced_at?: number
           tag_ids?: string[]
           title?: string
           unit_cost?: number
@@ -353,6 +371,7 @@ export type Database = {
           name: string
           phone: string | null
           role: string
+          synced_at: number
           updated_at: number
         }
         Insert: {
@@ -362,6 +381,7 @@ export type Database = {
           name: string
           phone?: string | null
           role: string
+          synced_at?: number
           updated_at?: number
         }
         Update: {
@@ -371,6 +391,7 @@ export type Database = {
           name?: string
           phone?: string | null
           role?: string
+          synced_at?: number
           updated_at?: number
         }
         Relationships: []
@@ -387,6 +408,7 @@ export type Database = {
           qty: number
           sold_at: number
           sold_by: string
+          synced_at: number
           total: number
           unit_cost_snapshot: number
           unit_sale_price: number
@@ -403,6 +425,7 @@ export type Database = {
           qty: number
           sold_at: number
           sold_by?: string
+          synced_at?: number
           total: number
           unit_cost_snapshot?: number
           unit_sale_price: number
@@ -419,6 +442,7 @@ export type Database = {
           qty?: number
           sold_at?: number
           sold_by?: string
+          synced_at?: number
           total?: number
           unit_cost_snapshot?: number
           unit_sale_price?: number
@@ -448,6 +472,27 @@ export type Database = {
           },
         ]
       }
+      settings: {
+        Row: {
+          key: string
+          synced_at: number
+          updated_at: number
+          value: Json
+        }
+        Insert: {
+          key: string
+          synced_at?: number
+          updated_at: number
+          value: Json
+        }
+        Update: {
+          key?: string
+          synced_at?: number
+          updated_at?: number
+          value?: Json
+        }
+        Relationships: []
+      }
       tag_groups: {
         Row: {
           created_at: number
@@ -455,6 +500,7 @@ export type Database = {
           id: string
           name: string
           sort: number
+          synced_at: number
           updated_at: number
         }
         Insert: {
@@ -463,6 +509,7 @@ export type Database = {
           id: string
           name: string
           sort?: number
+          synced_at?: number
           updated_at: number
         }
         Update: {
@@ -471,6 +518,7 @@ export type Database = {
           id?: string
           name?: string
           sort?: number
+          synced_at?: number
           updated_at?: number
         }
         Relationships: []
@@ -482,6 +530,7 @@ export type Database = {
           group_id: string
           id: string
           name: string
+          synced_at: number
           updated_at: number
         }
         Insert: {
@@ -490,6 +539,7 @@ export type Database = {
           group_id: string
           id: string
           name: string
+          synced_at?: number
           updated_at: number
         }
         Update: {
@@ -498,6 +548,7 @@ export type Database = {
           group_id?: string
           id?: string
           name?: string
+          synced_at?: number
           updated_at?: number
         }
         Relationships: [
@@ -513,6 +564,7 @@ export type Database = {
       vendor_returns: {
         Row: {
           at: number
+          cost_of_items: number
           created_at: number
           deleted_at: number | null
           id: string
@@ -522,12 +574,14 @@ export type Database = {
           piece_ids: string[] | null
           qty: number
           settlement: string | null
+          synced_at: number
           type: string
           updated_at: number
           value: number
         }
         Insert: {
           at: number
+          cost_of_items?: number
           created_at: number
           deleted_at?: number | null
           id: string
@@ -537,12 +591,14 @@ export type Database = {
           piece_ids?: string[] | null
           qty: number
           settlement?: string | null
+          synced_at?: number
           type: string
           updated_at: number
           value: number
         }
         Update: {
           at?: number
+          cost_of_items?: number
           created_at?: number
           deleted_at?: number | null
           id?: string
@@ -552,6 +608,7 @@ export type Database = {
           piece_ids?: string[] | null
           qty?: number
           settlement?: string | null
+          synced_at?: number
           type?: string
           updated_at?: number
           value?: number
@@ -579,7 +636,6 @@ export type Database = {
           suggested_price: number | null
           tag_ids: string[] | null
           title: string | null
-          updated_at: number | null
         }
         Relationships: []
       }

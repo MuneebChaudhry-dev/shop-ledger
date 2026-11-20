@@ -9,4 +9,4 @@ npm run dev
 ```
 
 Database: `npx supabase link --project-ref <ref>` then `npx supabase db push`.
-Project rules for Claude Code: `CLAUDE.md`. Specs: `.claude/docs/`.
+Project rules for Claude Code: `CLAUDE.md`. Specs: `docs/`.
