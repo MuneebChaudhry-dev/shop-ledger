@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-const url = import.meta.env.VITE_SUPABASE_URL as string
-const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string
+const url = import.meta.env.VITE_LS_DB_URL as string;
+const key = import.meta.env.VITE_LS_DB_PK as string;
 
 if (!url || !key) console.warn('Supabase env vars missing: copy .env.example to .env.local')
 

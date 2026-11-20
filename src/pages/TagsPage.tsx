@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { X } from 'lucide-react'
+import { FolderPlus, Plus, X } from 'lucide-react'
 import { useState } from 'react'
 import { Button, Card, Input, PageHeader, Spinner } from '../components/ui'
 import { db, newId, patchRecord, saveRecord, softDelete, type Tag, type TagGroup } from '../lib/db'
@@ -37,7 +37,7 @@ const GroupCard = ({ group, tags }: { group: TagGroup; tags: Tag[] }) => {
         }}
       >
         <Input placeholder="New tag (English or Urdu)" value={name} onChange={(e) => setName(e.target.value)} />
-        <Button disabled={!name.trim()}>Add</Button>
+        <Button disabled={!name.trim()} aria-label="Add tag"><Plus className="size-5" /></Button>
       </form>
     </Card>
   )
@@ -63,7 +63,7 @@ export const TagsPage = () => {
         }}
       >
         <Input placeholder="New group, e.g. Season" value={group} onChange={(e) => setGroup(e.target.value)} />
-        <Button disabled={!group.trim()}>Add group</Button>
+        <Button disabled={!group.trim()}><FolderPlus className="size-5" />Add group</Button>
       </form>
     </div>
   )

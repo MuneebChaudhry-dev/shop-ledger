@@ -1,3 +1,4 @@
+import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { PhotoThumb } from '../components/Photo'
@@ -18,7 +19,7 @@ export const SellPage = () => {
   return (
     <div>
       <PageHeader title="What did you sell?" />
-      <Input placeholder="Search name or tag" value={q} onChange={(e) => setQ(e.target.value)} className="mb-3" />
+      <Input icon={Search} placeholder="Search name or tag" value={q} onChange={(e) => setQ(e.target.value)} className="mb-3" />
       {!items ? <Spinner /> : !shown.length ? <EmptyState title="No stock to sell" /> : (
         <div className="grid grid-cols-2 gap-2">
           {shown.map((i) => (

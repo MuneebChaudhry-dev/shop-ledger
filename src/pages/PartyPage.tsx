@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Phone } from 'lucide-react'
+import { Phone, Wallet } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { MoneyInput } from '../components/MoneyInput'
@@ -8,6 +8,7 @@ import { recordPayment } from '../lib/actions'
 import { db } from '../lib/db'
 import { formatRs } from '../lib/money'
 import { useOwed } from '../lib/useDues'
+import { ErrorAlert } from '../components/Alert'
 
 export const PartyPage = () => {
   const { id = '' } = useParams()
@@ -48,7 +49,7 @@ export const PartyPage = () => {
         <MoneyInput value={amount} onChange={setAmount} placeholder={due > 0 ? String(due) : '0'} />
         <Segmented value={method} onChange={setMethod} options={[{ value: 'cash', label: 'Cash' }, { value: 'easypaisa', label: 'Easypaisa' }, { value: 'jazzcash', label: 'JazzCash' }, { value: 'bank', label: 'Bank' }]} />
         <Field label="Note (optional)"><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        <ErrorAlert error={error} onClose={() => setError(undefined)} />
         <Button
           className="w-full"
           disabled={!amount}
@@ -63,7 +64,7 @@ export const PartyPage = () => {
             }
           }}
         >
-          Save payment
+          <Wallet className="size-5" />Save payment
         </Button>
       </Card>
 

@@ -2,6 +2,7 @@ import { Camera, ImageOff } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { cn } from '../lib/cn'
 import { savePhoto, usePhotoUrl, type PhotoKind } from '../lib/photos'
+import { ErrorAlert } from './Alert'
 
 export const PhotoThumb = ({ photoId, className }: { photoId?: string; className?: string }) => {
   const url = usePhotoUrl(photoId)
@@ -41,7 +42,7 @@ export const PhotoInput = ({
         )}
         <span className="font-medium text-slate-700">{busy ? 'Saving...' : value ? 'Retake photo' : label}</span>
       </button>
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {error && <div className="mt-2"><ErrorAlert error={error} onClose={() => setError(undefined)} /></div>}
       <input
         ref={ref}
         type="file"

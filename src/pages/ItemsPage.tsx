@@ -1,3 +1,4 @@
+import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { PhotoThumb } from '../components/Photo'
@@ -17,7 +18,7 @@ export const ItemsPage = () => {
   return (
     <div>
       <PageHeader title="Items in stock" />
-      <Input placeholder="Search name or tag" value={q} onChange={(e) => setQ(e.target.value)} className="mb-3" />
+      <Input icon={Search} placeholder="Search name or tag" value={q} onChange={(e) => setQ(e.target.value)} className="mb-3" />
       {!items ? <Spinner /> : !shown.length ? <EmptyState title="Nothing found">New stock shows here after it syncs.</EmptyState> : (
         <div className="space-y-2">
           {shown.map((i) => (

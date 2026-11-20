@@ -1,3 +1,4 @@
+import { Check, Minus, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { MoneyInput } from '../components/MoneyInput'
@@ -8,6 +9,7 @@ import { useAuth } from '../lib/auth'
 import type { Sale } from '../lib/db'
 import { formatRs, priceFlag } from '../lib/money'
 import { useSellableItems } from '../lib/queries'
+import { ErrorAlert } from '../components/Alert'
 
 const flagText = { red: 'Below minimum', yellow: 'OK, below asking price', green: 'Good price' } as const
 const flagClass = { red: 'border-red-500 bg-red-50', yellow: 'border-amber-500 bg-amber-50', green: 'border-green-600 bg-green-50' } as const
@@ -59,7 +61,7 @@ export const SellItemPage = () => {
       {!item.pieceId && (
         <Field label="Quantity" group>
           <div className="flex items-center gap-2">
-            <Button type="button" variant="secondary" className="w-14 text-xl" onClick={() => setQty((q) => Math.max(1, q - 1))}>-</Button>
+            <Button type="button" variant="secondary" aria-label="One less" className="w-14" onClick={() => setQty((q) => Math.max(1, q - 1))}><Minus className="size-5" /></Button>
             <Input
               inputMode="numeric"
               dir="ltr"
@@ -67,7 +69,7 @@ export const SellItemPage = () => {
               value={qty}
               onChange={(e) => setQty(Math.min(item.qtyRemaining, Math.max(1, Number(e.target.value.replace(/\D/g, '')) || 1)))}
             />
-            <Button type="button" variant="secondary" className="w-14 text-xl" onClick={() => setQty((q) => Math.min(item.qtyRemaining, q + 1))}>+</Button>
+            <Button type="button" variant="secondary" aria-label="One more" className="w-14" onClick={() => setQty((q) => Math.min(item.qtyRemaining, q + 1))}><Plus className="size-5" /></Button>
           </div>
         </Field>
       )}
@@ -85,8 +87,8 @@ export const SellItemPage = () => {
         />
       </Field>
       {price !== null && qty > 1 && <p className="text-lg">Total: <b>{formatRs(price * qty)}</b></p>}
-      {error && <p className="text-red-600">{error}</p>}
-      <Button size="lg" className="w-full" disabled={busy}>{busy ? 'Saving...' : 'Save sale'}</Button>
+      <ErrorAlert error={error} onClose={() => setError(undefined)} />
+      <Button size="lg" className="w-full" disabled={busy}><Check className="size-5" />{busy ? 'Saving...' : 'Save sale'}</Button>
     </form>
   )
 }

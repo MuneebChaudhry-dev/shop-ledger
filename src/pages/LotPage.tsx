@@ -1,3 +1,4 @@
+import { PackageMinus, Pencil, Save, Trash2 } from 'lucide-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
@@ -9,6 +10,7 @@ import { recordVendorReturn } from '../lib/actions'
 import { lotRecovery } from '../lib/calc/stock'
 import { db, patchRecord, softDelete, type Lot, type Piece } from '../lib/db'
 import { formatRs, type PriceSet } from '../lib/money'
+import { ErrorAlert } from '../components/Alert'
 
 const statusTone = { in_stock: 'green', sold: 'slate', returned: 'yellow', written_off: 'red' } as const
 const statusText = { in_stock: 'In stock', sold: 'Sold', returned: 'Returned', written_off: 'Written off' } as const
@@ -42,7 +44,7 @@ const EditLot = ({ lot, onDone }: { lot: Lot; onDone: () => void }) => {
             onDone()
           }}
         >
-          Save
+          <Save className="size-4" />Save
         </Button>
       </div>
     </Card>
@@ -86,7 +88,7 @@ const ReturnForm = ({ lot, pieces, onDone }: { lot: Lot; pieces: Piece[]; onDone
       )}
       <PhotoInput kind="return" value={photoId} onChange={setPhotoId} label="Photo (optional)" />
       <Field label="Note (optional)"><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      <ErrorAlert error={error} onClose={() => setError(undefined)} />
       <div className="flex gap-2">
         <Button type="button" variant="secondary" className="flex-1" onClick={onDone}>Cancel</Button>
         <Button
@@ -138,7 +140,7 @@ export const LotPage = () => {
 
   return (
     <div className="space-y-4">
-      <PageHeader title={lot.title} back action={panel === 'none' && <Button size="sm" variant="secondary" onClick={() => setPanel('edit')}>Edit</Button>} />
+      <PageHeader title={lot.title} back action={panel === 'none' && <Button size="sm" variant="secondary" onClick={() => setPanel('edit')}><Pencil className="size-4" />Edit</Button>} />
       <PhotoThumb photoId={lot.lotPhotoId} className="aspect-video w-full" />
       <TagChips ids={lot.tagIds} names={names} />
       {lot.description && <p className="text-slate-700" dir="auto">{lot.description}</p>}
@@ -186,7 +188,7 @@ export const LotPage = () => {
         <ReturnForm lot={lot} pieces={pieces} onDone={() => setPanel('none')} />
       ) : (
         lot.qtyRemaining > 0 && panel === 'none' && (
-          <Button variant="secondary" className="w-full" onClick={() => setPanel('return')}>Return to vendor or write off</Button>
+          <Button variant="secondary" className="w-full" onClick={() => setPanel('return')}><PackageMinus className="size-5" />Return to vendor or write off</Button>
         )
       )}
 
@@ -212,7 +214,7 @@ export const LotPage = () => {
             navigate('/stock', { replace: true })
           }}
         >
-          Delete lot
+          <Trash2 className="size-4" />Delete lot
         </Button>
       )}
     </div>

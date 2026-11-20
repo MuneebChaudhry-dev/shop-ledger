@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { MoneyInput } from '../components/MoneyInput'
 import { Button, Card, Field, Input, PageHeader, Row, Spinner } from '../components/ui'
@@ -7,6 +7,7 @@ import { addExpense } from '../lib/actions'
 import { getPeriod, monthKey, shiftPeriod } from '../lib/calc/periods'
 import { db, softDelete } from '../lib/db'
 import { formatRs } from '../lib/money'
+import { ErrorAlert } from '../components/Alert'
 
 const presets = ['Rent', 'Electricity', 'Salaries', 'Internet', 'Transport', 'Other']
 
@@ -45,7 +46,7 @@ export const ExpensesPage = () => {
         </div>
         <Field label="Name"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
         <Field label="Amount"><MoneyInput value={amount} onChange={setAmount} /></Field>
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        <ErrorAlert error={error} onClose={() => setError(undefined)} />
         <Button
           className="w-full"
           disabled={!name.trim() || !amount}
@@ -60,7 +61,7 @@ export const ExpensesPage = () => {
             }
           }}
         >
-          Add to {period.label}
+          <Plus className="size-5" />Add to {period.label}
         </Button>
       </Card>
 
@@ -70,7 +71,7 @@ export const ExpensesPage = () => {
             <span dir="auto">{e.name}</span>
             <span className="flex items-center gap-3">
               <b>{formatRs(e.amount)}</b>
-              <button type="button" className="text-sm text-red-600" onClick={() => confirm(`Remove ${e.name}?`) && void softDelete('expenses', e.id)}>Remove</button>
+              <button type="button" aria-label={`Remove ${e.name}`} className="rounded-lg p-1.5 text-red-600 hover:bg-red-50" onClick={() => confirm(`Remove ${e.name}?`) && void softDelete('expenses', e.id)}><Trash2 className="size-4" /></button>
             </span>
           </div>
         ))}

@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { PhotoThumb } from '../components/Photo'
@@ -21,7 +21,7 @@ export const StockPage = () => {
     <div>
       <PageHeader title="Stock" action={<Button size="sm" onClick={() => navigate('/stock/new')}><Plus className="size-4" />Add</Button>} />
       {lots && <p className="mb-3 text-sm text-slate-500">Stock value at cost: <b className="text-slate-800">{formatRs(stockValue(lots))}</b></p>}
-      <Input placeholder="Search name or tag" value={q} onChange={(e) => setQ(e.target.value)} className="mb-2" />
+      <Input icon={Search} placeholder="Search name or tag" value={q} onChange={(e) => setQ(e.target.value)} className="mb-2" />
       <div className="mb-3">
         <Segmented value={show} onChange={setShow} options={[{ value: 'in', label: 'In stock' }, { value: 'all', label: 'All lots' }]} />
       </div>

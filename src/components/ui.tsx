@@ -1,5 +1,5 @@
-import { ChevronLeft } from 'lucide-react'
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react'
+import { ChevronLeft, Eye, EyeOff, type LucideIcon } from 'lucide-react'
+import { useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { useNavigate } from 'react-router'
 import { cn } from '../lib/cn'
 
@@ -18,10 +18,10 @@ export const Button = ({
       size === 'lg' && 'h-14 px-5 text-lg',
       size === 'md' && 'h-12 px-4',
       size === 'sm' && 'h-9 px-3 text-sm',
-      variant === 'primary' && 'bg-teal-700 text-white',
-      variant === 'secondary' && 'border border-slate-300 bg-white text-slate-800',
-      variant === 'ghost' && 'text-teal-700',
-      variant === 'danger' && 'bg-red-600 text-white',
+      variant === 'primary' && 'bg-teal-700 text-white shadow-sm shadow-teal-900/20 hover:bg-teal-800',
+      variant === 'secondary' && 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50',
+      variant === 'ghost' && 'text-teal-700 hover:bg-teal-50',
+      variant === 'danger' && 'bg-red-600 text-white hover:bg-red-700',
       className,
     )}
   />
@@ -30,9 +30,35 @@ export const Button = ({
 const inputClass =
   'w-full rounded-xl border border-slate-300 bg-white px-3 text-base outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20'
 
-export const Input = ({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) => (
-  <input dir="auto" {...props} className={cn(inputClass, 'h-12', className)} />
-)
+export const Input = ({ className, icon: Icon, ...props }: InputHTMLAttributes<HTMLInputElement> & { icon?: LucideIcon }) =>
+  Icon ? (
+    <div className="relative">
+      <Icon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+      <input dir="auto" {...props} className={cn(inputClass, 'h-12 pl-10', className)} />
+    </div>
+  ) : (
+    <input dir="auto" {...props} className={cn(inputClass, 'h-12', className)} />
+  )
+
+/** Password field with a show / hide eye button. */
+export const PasswordInput = ({ className, icon: Icon, ...props }: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & { icon?: LucideIcon }) => {
+  const [show, setShow] = useState(false)
+  return (
+    <div className="relative">
+      {Icon && <Icon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-400" />}
+      <input dir="ltr" {...props} type={show ? 'text' : 'password'} className={cn(inputClass, 'h-12 pr-12', Icon && 'pl-10', className)} />
+      <button
+        type="button"
+        aria-label={show ? 'Hide password' : 'Show password'}
+        aria-pressed={show}
+        onClick={() => setShow((v) => !v)}
+        className="absolute right-1 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+      >
+        {show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+      </button>
+    </div>
+  )
+}
 
 export const Textarea = ({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) => (
   <textarea dir="auto" rows={3} {...props} className={cn(inputClass, 'py-2', className)} />
@@ -63,7 +89,7 @@ export const Field = ({
     <>
       <span className="block text-sm font-medium text-slate-700">{label}</span>
       {children}
-      {error ? <span className="block text-sm text-red-600">{error}</span> : hint ? <span className="block text-sm text-slate-500">{hint}</span> : null}
+      {error ? <span className="block text-sm font-medium text-red-600">{error}</span> : hint ? <span className="block text-sm text-slate-500">{hint}</span> : null}
     </>
   )
   return group ? (
@@ -77,7 +103,7 @@ export const Card = ({ className, children, onClick }: { className?: string; chi
   <div
     onClick={onClick}
     role={onClick ? 'button' : undefined}
-    className={cn('rounded-2xl border border-slate-200 bg-white p-4', onClick && 'cursor-pointer active:bg-slate-50', className)}
+    className={cn('rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/50', onClick && 'cursor-pointer transition hover:border-teal-300 active:bg-slate-50', className)}
   >
     {children}
   </div>

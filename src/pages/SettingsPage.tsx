@@ -1,3 +1,4 @@
+import { Download, LogOut, RefreshCw, Save, Tags, Users } from 'lucide-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -10,6 +11,7 @@ import { can } from '../lib/roles'
 import { saveSetting, useChaiDefault, useMargins } from '../lib/settings'
 import { db } from '../lib/db'
 import { MAX_TRIES, retryStuck, syncNow, useSyncStore } from '../lib/sync'
+import { ErrorAlert } from '../components/Alert'
 
 const pct = (v: number) => Math.round(v * 100)
 
@@ -48,7 +50,7 @@ const Margins = () => {
           setTimeout(() => setSaved(false), 2000)
         }}
       >
-        {saved ? 'Saved' : 'Save margins'}
+        <Save className="size-4" />{saved ? 'Saved' : 'Save margins'}
       </Button>
     </Card>
   )
@@ -81,27 +83,27 @@ export const SettingsPage = () => {
         <Row label="Signed in as">{profile?.name} ({profile?.role})</Row>
         <Row label="Waiting to sync">{pending}</Row>
         <Row label="Last synced">{lastSyncedAt ? new Date(lastSyncedAt).toLocaleTimeString() : 'Not yet'}</Row>
-        {lastError && <p className="mt-1 break-words text-sm text-red-600">{lastError}</p>}
-        <Button variant="secondary" className="mt-2 w-full" onClick={() => void syncNow()}>Sync now</Button>
+        {lastError && <div className="mt-2"><ErrorAlert error={lastError} /></div>}
+        <Button variant="secondary" className="mt-2 w-full" onClick={() => void syncNow()}><RefreshCw className="size-4" />Sync now</Button>
       </Card>
       {!!stuck?.length && (
         <Card className="space-y-2 border-amber-300 bg-amber-50">
           <p className="font-medium">{stuck.length} changes could not upload</p>
-          {stuck.slice(0, 5).map((j) => <p key={j.id} className="break-words text-xs text-slate-600">{j.lastError}</p>)}
+          {stuck.slice(0, 3).map((j) => <ErrorAlert key={j.id} error={j.lastError} />)}
           <p className="text-sm text-slate-600">They are kept on this phone. Send a screenshot of this to the developer, or retry.</p>
-          <Button variant="secondary" className="w-full" onClick={() => void retryStuck()}>Retry stuck changes</Button>
+          <Button variant="secondary" className="w-full" onClick={() => void retryStuck()}><RefreshCw className="size-4" />Retry stuck changes</Button>
         </Card>
       )}
       {isOwner && <Margins />}
       {isOwner && <Chai />}
       {isOwner && (
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="secondary" onClick={() => navigate('/settings/tags')}>Tags</Button>
-          <Button variant="secondary" onClick={() => navigate('/settings/users')}>Users</Button>
+          <Button variant="secondary" onClick={() => navigate('/settings/tags')}><Tags className="size-4" />Tags</Button>
+          <Button variant="secondary" onClick={() => navigate('/settings/users')}><Users className="size-4" />Users</Button>
         </div>
       )}
       {can(profile?.role, 'stock.manage') && (
-        <Button variant="secondary" className="w-full" onClick={() => void exportBackup()}>Download backup (JSON)</Button>
+        <Button variant="secondary" className="w-full" onClick={() => void exportBackup()}><Download className="size-4" />Download backup (JSON)</Button>
       )}
       {warn ? (
         <Card className="space-y-2 border-red-300 bg-red-50">
@@ -112,7 +114,7 @@ export const SettingsPage = () => {
           </div>
         </Card>
       ) : (
-        <Button variant="ghost" className="w-full text-red-600" onClick={async () => { if (!(await signOut())) setWarn(true) }}>Sign out</Button>
+        <Button variant="ghost" className="w-full text-red-600" onClick={async () => { if (!(await signOut())) setWarn(true) }}><LogOut className="size-4" />Sign out</Button>
       )}
     </div>
   )

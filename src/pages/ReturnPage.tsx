@@ -1,3 +1,4 @@
+import { Undo2 } from 'lucide-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
@@ -6,6 +7,7 @@ import { Button, Card, EmptyState, Field, Input, PageHeader, Row, Segmented, Spi
 import { recordCustomerReturn, returnedQty } from '../lib/actions'
 import { db } from '../lib/db'
 import { formatRs } from '../lib/money'
+import { ErrorAlert } from '../components/Alert'
 
 /** Customer brings an item back. Recorded as a new dated entry; the original sale is not changed. */
 export const ReturnPage = () => {
@@ -52,7 +54,7 @@ export const ReturnPage = () => {
             <Segmented value={backToStock} onChange={setBackToStock} options={[{ value: 'stock', label: 'Back to stock' }, { value: 'defective', label: 'Defective' }]} />
           </Field>
           <Field label="Note (optional)"><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
-          {error && <p className="text-red-600">{error}</p>}
+          <ErrorAlert error={error} onClose={() => setError(undefined)} />
           <Button
             size="lg"
             className="w-full"
@@ -65,7 +67,7 @@ export const ReturnPage = () => {
               }
             }}
           >
-            Save return
+            <Undo2 className="size-5" />Save return
           </Button>
         </>
       )}

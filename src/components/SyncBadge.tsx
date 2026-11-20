@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle2, CloudOff, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { friendlyError } from '../lib/errors'
 import { syncNow, useSyncStore } from '../lib/sync'
 
 export const useOnline = () => {
@@ -25,8 +26,8 @@ export const SyncBadge = () => {
     return <span className={`${base} bg-slate-200 text-slate-700`}><CloudOff className="size-3.5" />Offline{pending ? ` · ${pending} waiting` : ''}</span>
   if (lastError)
     return (
-      <button type="button" title={lastError} onClick={() => void syncNow()} className={`${base} bg-red-100 text-red-700`}>
-        <AlertTriangle className="size-3.5" />Sync failed · retry
+      <button type="button" title={friendlyError(lastError)?.title} onClick={() => void syncNow()} className={`${base} bg-red-100 text-red-700`}>
+        <AlertTriangle className="size-3.5" />Sync problem · tap to retry
       </button>
     )
   if (syncing || pending)

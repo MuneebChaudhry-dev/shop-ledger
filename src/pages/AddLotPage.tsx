@@ -1,3 +1,4 @@
+import { PackagePlus } from 'lucide-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -9,6 +10,7 @@ import { createLot } from '../lib/actions'
 import { db } from '../lib/db'
 import { allocatePieceCosts, formatRs, leftToAssign, suggestPrices, unitCost, type PriceSet } from '../lib/money'
 import { useMargins } from '../lib/settings'
+import { ErrorAlert } from '../components/Alert'
 
 interface PieceDraft extends PriceSet {
   title: string
@@ -177,8 +179,8 @@ export const AddLotPage = () => {
           ))}
         </div>
       )}
-      {error && <p className="text-red-600">{error}</p>}
-      <Button size="lg" className="w-full" disabled={busy}>{busy ? 'Saving...' : 'Save stock'}</Button>
+      <ErrorAlert error={error} onClose={() => setError(undefined)} />
+      <Button size="lg" className="w-full" disabled={busy}><PackagePlus className="size-5" />{busy ? 'Saving...' : 'Save stock'}</Button>
     </form>
   )
 }
